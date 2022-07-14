@@ -4,6 +4,9 @@ SetWinDelay, -1
 SetBatchLines, -1
 #Include gdip.ahk
 
+
+
+
 ;####################### button press ######################
 class MyClass{
 	__New(){
@@ -63,7 +66,7 @@ class HkHandler {
 			joyinfo := GetKeyState(joyid "JoyInfo")
 			if (joyinfo){
 				; watch buttons
-				Loop % 32 {
+				Loop % 16 {
 					fn := this._ProcessJHook.Bind(this, joyid, A_Index)
 					hotkey, % joyid "Joy" A_Index, % fn
 				}
@@ -470,20 +473,33 @@ Hotkey,%Cycle_Controllers%,Cycle_Controllers
 
 IniRead, Minimize, devreorder.ini, Settings, Minimize_Gui
 Hotkey,%Minimize%,Minimize
-rundevicelister := 1
+
+;####################### Device connect ######################
+notified := False
+OnMessage(0x219, "notify_change")
+Return
+
+notify_change(wParam, lParam, msg, hwnd)
+{ 
+	SetTimer, DLreset, 1000
+}
+Return
+DLreset:
+	if (notified = False)
+	{
+		run, DeviceLister.exe
+		notified := true
+	}
+SetTimer, DLreset, OFF
+SetTimer, notifytimer, 4000
+Return
+notifytimer:
+notified := False
 Return
 ;######################## Load/Reload Gui ###############################
-
 Cycle_Players:
 			Hotkey,%Cycle_Controllers%,Cycle_Controllers, ON
 			Joystick_input := 1
-			if (rundevicelister = 1)
-			{
-				run, devicelister.exe
-				rundevicelister := 0
-				
-			}
-	SkipCheck:
 			Gui, Destroy
 			Gui, top:Destroy
 			Gui, bg:Destroy
@@ -572,11 +588,6 @@ Cycle_Players:
 			}
 
 		}
-	if (numctrlr = 0)
-	{
-	sleep 500
-	goto, SkipCheck
-	}
 
 
 		xMidScrn :=  A_ScreenWidth/2
@@ -763,14 +774,14 @@ Cycle_Players:
 			
 
 		
-;		#######joystick input recognition########
+;#################joystick input recognition##################
 
 		mc := new MyClass()	
 
 return
 
 
-;		#######################################
+;#################### Cycle Controllers ######################
 
 cycle()
 {
@@ -846,6 +857,7 @@ SetTimer, cycle, 100
 			return
 			view := ""
 		
+;######################## Save ##########################
 
 	TimeIdle:
 			FileDelete, devtemp.ini	
@@ -894,7 +906,6 @@ SetTimer, cycle, 100
 	Hotkey,%Cycle_Controllers%,Cycle_Controllers, OFF
 	numctrlr := 0
 	Joystick_input := 0
-	rundevicelister := 1
 	SetTimer, TimeIdle, OFF	
 	SetTimer, Minimize, OFF	
 	return
