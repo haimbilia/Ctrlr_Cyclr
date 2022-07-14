@@ -39,3 +39,5 @@ you can also apply a controller to a player by name without loading the gui, for
 start dir\ctrlr_cyclr.exe "1" "DualShock 4"
 
 will apply DualShock 4 to player 1.
+
+C+F4 kills app process
