@@ -7,6 +7,7 @@ briankendall made a dinput8.dll file that reads a .ini to know the order of the 
 my script simply read and writes to that .ini file.
 i changed the devicelister to instead of opening a gui to just list the controllers in the ini, under [ALL].
 if you want to open the gui, run from command line with any argument, for example:
+
 start <dir>\devicelister.exe "1"
   
 installation:
