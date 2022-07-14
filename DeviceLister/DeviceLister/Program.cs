@@ -66,7 +66,7 @@ namespace DeviceLister
         static void Main()
         {
             var MyIni = new IniFile("devreorder.ini");
-            MyIni.DeleteSection("ALL");
+            
             string deviceData = "";
             string devEnum = "";
             int devnum = 0;
@@ -86,7 +86,7 @@ namespace DeviceLister
             .Where(g => g.Count() > 1)
             .ToDictionary(x => x.Key, y => y.Count());
 
-
+            MyIni.DeleteSection("ALL");
             foreach (DeviceInstance di in Manager.GetDevices(DeviceClass.GameControl, EnumDevicesFlags.AttachedOnly))
             {
 
