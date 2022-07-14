@@ -483,6 +483,7 @@ Cycle_Players:
 				rundevicelister := 0
 				
 			}
+	SkipCheck:
 			Gui, Destroy
 			Gui, top:Destroy
 			Gui, bg:Destroy
@@ -565,12 +566,17 @@ Cycle_Players:
 						Array.Push(A_LoopReadLine)
 						
 					}
+					
 				}
 			NAME = ""
 			}
 
 		}
-	
+	if (numctrlr = 0)
+	{
+	sleep 500
+	goto, SkipCheck
+	}
 
 
 		xMidScrn :=  A_ScreenWidth/2
@@ -606,7 +612,10 @@ Cycle_Players:
 		{
 					selctrlrnum := 1
 					selctrlrname := FirstCtrlrName
+					
 		}
+		
+		
 		ybg := A_Screenheight
 		Gui, bbg:Destroy
 		Gui, bbg: +AlwaysOnTop +LastFound +Owner -Caption -0xC00000
@@ -890,9 +899,3 @@ SetTimer, cycle, 100
 	SetTimer, Minimize, OFF	
 	return
 ~c & f4::ExitApp
-
-
-
-
-
-	
