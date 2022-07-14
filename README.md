@@ -1,4 +1,4 @@
-# Ctrl-Cyclr - a gui for devreorder
+# Ctrlr-Cyclr - a gui for devreorder
 what it does:
 it basically lets you pull up a menu before you launch the game that lets you choose which controllers you like to use and in which order.
 
