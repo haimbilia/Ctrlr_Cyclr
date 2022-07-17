@@ -66,7 +66,7 @@ class HkHandler {
 			joyinfo := GetKeyState(joyid "JoyInfo")
 			if (joyinfo){
 				; watch buttons
-				Loop % 16 {
+				Loop % 8 {
 					fn := this._ProcessJHook.Bind(this, joyid, A_Index)
 					hotkey, % joyid "Joy" A_Index, % fn
 				}
@@ -481,23 +481,95 @@ Return
 
 notify_change(wParam, lParam, msg, hwnd)
 { 
-	SetTimer, DLreset, 1000
+	
+	SetTimer, notifytimer, 1000
+	sleep 1000
 }
 Return
-DLreset:
+notifytimer:
+IniRead, oldALLSection, devreorder.ini, ALL
+AllArray := StrSplit(oldALLSection, "}")
+sleep 1000
+SetTimer, notifytimer, OFF
 	if (notified = False)
 	{
 		run, DeviceLister.exe
 		notified := true
 	}
-SetTimer, DLreset, OFF
-SetTimer, notifytimer, 4000
-Return
-notifytimer:
+sleep 1000
+	
+	IniRead, newALLSection, devreorder.ini, ALL
+	newAllArray := StrSplit(newALLSection, "}")
+	
+	
+		for index, oldlist in AllArray
+		{	
+			;iAllArray := A_INDEX
+			for index, Newlist in newAllArray
+			{
+				if (Newlist = oldlist)
+				{
+				newAllArray[A_Index] := match
+				}
+			}
+			
+		}
+		
+		for index, matchlist in newAllArray
+		{
+				if (matchlist != match)
+				{
+					newctrlr = %matchlist%}
+					RegExMatch(newctrlr, "\{\K.*(?=\})", GUID)
+					RegExMatch(newctrlr, """\K.*(?="")", NAME)
+					;msgbox, %GUID%
+					GUIDimg = %A_ScriptDir%\ctrlr-img\{%GUID%}.png
+					NAMEimg = %A_ScriptDir%\ctrlr-img\%NAME%.png
+					
+					if FileExist(GUIDimg)
+					{
+						image = %A_ScriptDir%\ctrlr-img\{%GUID%}.png
+					}
+					else if FileExist(NAMEimg)
+					{
+						image = %A_ScriptDir%\ctrlr-img\%NAME%.png
+					}
+					else
+					{
+						image = %A_ScriptDir%\ctrlr-img\no-img.png
+					}
+					xn := A_ScreenWidth-300
+					yn := A_ScreenHeight
+					ctrlr := new ImageViewer
+					loop 10
+					{
+					yn := yn-20
+					ctrlr.Show(image, xn, yn, 200, -1)
+					sleep 2
+					}
+					sleep 1000
+					loop 10
+					{
+					yn := yn+20
+					ctrlr.Show(image, xn, yn, 200, -1)
+					sleep 2
+					}
+
+					
+				}
+		}
+	sleep 2000	
 notified := False
+
 Return
+
+
 ;######################## Load/Reload Gui ###############################
 Cycle_Players:
+			if (notified = true)
+			{
+			sleep 2000
+			}
 			Hotkey,%Cycle_Controllers%,Cycle_Controllers, ON
 			Joystick_input := 1
 			Gui, Destroy
