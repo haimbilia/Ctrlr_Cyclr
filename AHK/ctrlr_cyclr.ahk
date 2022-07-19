@@ -465,17 +465,27 @@ StripWhitespace( String, Front = true, Back = true )
 	goto, CmdCycle
 	}
 ;######################## Load Settings ###############################	
-IniRead, Cycle_Players, devreorder.ini, Settings, Cycle_Players
+inifile := "devreorder.ini"
+IniRead, Settings, %inifile%, Settings
+
+Loop, Parse, Settings, `n`r
+{
+
+		if(NOT InStr(A_LoopField, "="))
+			continue
+		ArrCount++
+		StringSplit, data, A_LoopField, =
+		%data1% := data2
+}
+
 Hotkey,%Cycle_Players%,Cycle_Players
-
-IniRead, Cycle_Controllers, devreorder.ini, Settings, Cycle_Controllers
 Hotkey,%Cycle_Controllers%,Cycle_Controllers
+Hotkey,%Minimize_Gui%,Minimize
 
-IniRead, Minimize, devreorder.ini, Settings, Minimize_Gui
-Hotkey,%Minimize%,Minimize
-
+;msgbox, % Connect_Notify
 ;####################### Device connect ######################
-notified := False
+notified := 0
+
 OnMessage(0x219, "notify_change")
 Return
 
@@ -486,80 +496,125 @@ notify_change(wParam, lParam, msg, hwnd)
 	sleep 1000
 }
 Return
+
 notifytimer:
-IniRead, oldALLSection, devreorder.ini, ALL
-AllArray := StrSplit(oldALLSection, "}")
+IniRead, oldALLSection, %inifile%, ALL
+IniRead, oldorderSection, %inifile%, order
+
 sleep 1000
 SetTimer, notifytimer, OFF
-	if (notified = False)
+
+	notified++
+	if (notified = 1)
 	{
-		run, DeviceLister.exe
-		notified := true
-	}
-sleep 1000
+	run, DeviceLister.exe
+	sleep 2000
+
+	newAllArray := []
+	IniRead, newALLSection, %inifile%, ALL
 	
-	IniRead, newALLSection, devreorder.ini, ALL
-	newAllArray := StrSplit(newALLSection, "}")
-	
-	
-		for index, oldlist in AllArray
-		{	
-			;iAllArray := A_INDEX
-			for index, Newlist in newAllArray
+		Loop, Parse, newALLSection, `n`r
+		{
+			
+			newAllArray.Push(A_LoopField)
+			newline := A_LoopField
+			newindex := A_INDEX
+			
+			Loop, Parse, oldALLSection, `n`r
 			{
-				if (Newlist = oldlist)
+				oldline := A_LoopField
+				
+				if (oldline = newline)
 				{
-				newAllArray[A_Index] := match
+					newAllArray[newindex] := "match"
+					
 				}
 			}
-			
+
 		}
+		
+		
 		
 		for index, matchlist in newAllArray
 		{
-				if (matchlist != match)
+				
+				if (matchlist != "match")
 				{
-					newctrlr = %matchlist%}
+
+					newctrlr = %matchlist%
 					RegExMatch(newctrlr, "\{\K.*(?=\})", GUID)
 					RegExMatch(newctrlr, """\K.*(?="")", NAME)
-					;msgbox, %GUID%
-					GUIDimg = %A_ScriptDir%\ctrlr-img\{%GUID%}.png
-					NAMEimg = %A_ScriptDir%\ctrlr-img\%NAME%.png
 					
-					if FileExist(GUIDimg)
+					if (Connect_Notify = "true")
 					{
-						image = %A_ScriptDir%\ctrlr-img\{%GUID%}.png
-					}
-					else if FileExist(NAMEimg)
-					{
-						image = %A_ScriptDir%\ctrlr-img\%NAME%.png
-					}
-					else
-					{
-						image = %A_ScriptDir%\ctrlr-img\no-img.png
-					}
-					xn := A_ScreenWidth-300
-					yn := A_ScreenHeight
-					ctrlr := new ImageViewer
-					loop 10
-					{
-					yn := yn-20
-					ctrlr.Show(image, xn, yn, 200, -1)
-					sleep 2
-					}
-					sleep 1000
-					loop 10
-					{
-					yn := yn+20
-					ctrlr.Show(image, xn, yn, 200, -1)
-					sleep 2
-					}
+						GUIDimg = %A_ScriptDir%\ctrlr-img\{%GUID%}.png
+						NAMEimg = %A_ScriptDir%\ctrlr-img\%NAME%.png
+						if FileExist(GUIDimg)
+						{
+							image = %A_ScriptDir%\ctrlr-img\{%GUID%}.png
+						}
+						else if FileExist(NAMEimg)
+						{
+							image = %A_ScriptDir%\ctrlr-img\%NAME%.png
+						}
+						else
+						{
+							image = %A_ScriptDir%\ctrlr-img\no-img.png
+						}
+						xn := A_ScreenWidth-300
+						yn := A_ScreenHeight
+						ctrlr := new ImageViewer
+						loop 10
+						{
+						yn := yn-20
+						ctrlr.Show(image, xn, yn, 200, -1)
+						sleep 2
+						}
+						sleep 1000
+						loop 10
+						{
+						yn := yn+20
+						ctrlr.Show(image, xn, yn, 200, -1)
+						sleep 2
+						}
 
+					}
 					
-				}
+					if (Last_Connected_First = "true")
+					{
+						playernum := 0
+						orderArray := []
+						Loop, Parse, oldorderSection, `n`r
+						{
+								playernum++
+						}
+						
+						
+						FileDelete, devtemp.ini	
+						Loop, Read, %inifile%, devtemp.ini
+						{	
+							RegExMatch(A_LoopReadLine, "\[\K.*(?=\])", section)
+							if (section = "order")
+							{
+								orderline := A_INDEX
+							}
+							
+							if (A_INDEX != orderline+playernum)
+							{
+								FileAppend, %A_LoopReadLine%`n
+							}
+						}
+						FileDelete, devreorder.ini
+						FileMove, devtemp.ini, devreorder.ini
+						IniWrite, {%GUID%}, %inifile%, order
+					}
+				}	
 		}
-	sleep 2000	
-notified := False
+	}
+
+
+sleep 2000
+notified := 0
 
 Return
 
@@ -934,7 +989,7 @@ SetTimer, cycle, 100
 	TimeIdle:
 			FileDelete, devtemp.ini	
 			playerline := playernum + orderline
-			Loop, Read, devreorder.ini, devtemp.ini
+			Loop, Read, %inifile%, devtemp.ini
 			{	
 				if (A_LoopReadLine !="")
 				{	
