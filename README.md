@@ -39,9 +39,13 @@ will apply DualShock 4 to player 1.
 
 in devreorder.ini:
 Cycle_Players - set the hotkey that loads gui and cycles between players
+
 Cycle_Controllers - set the hotkey that cycles between controllers
+
 Minimize_Gui - set the hotkey that minimizes the selection window
+
 Connect_Notify - choose if you want to see which controller was connected last
+
 Last_Connected_First - choose if you want the last connected controller to be assigned to player 1
 
 C+F4 kills app process
