@@ -31,13 +31,17 @@ if you can't, try calling it from command line (can be done with joytokey).
 running it from command line you can load the menu in the player number you want, for example:
 
 start dir\ctrlr_cyclr.exe "2"
-
 will load the gui selecting player 2 controllers.
 
 you can also apply a controller to a player by name without loading the gui, for example:
-
 start dir\ctrlr_cyclr.exe "1" "DualShock 4"
-
 will apply DualShock 4 to player 1.
+
+in devreorder.ini:
+Cycle_Players - set the hotkey that loads gui and cycles between players
+Cycle_Controllers - set the hotkey that cycles between controllers
+Minimize_Gui - set the hotkey that minimizes the selection window
+Connect_Notify - choose if you want to see which controller was connected last
+Last_Connected_First - choose if you want the last connected controller to be assigned to player 1
 
 C+F4 kills app process
