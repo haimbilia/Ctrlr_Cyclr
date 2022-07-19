@@ -38,6 +38,7 @@ start dir\ctrlr_cyclr.exe "1" "DualShock 4"
 will apply DualShock 4 to player 1.
 
 in devreorder.ini:
+
 Cycle_Players - set the hotkey that loads gui and cycles between players
 
 Cycle_Controllers - set the hotkey that cycles between controllers
