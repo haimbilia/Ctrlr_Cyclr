@@ -17,7 +17,7 @@ you can also install it for entire system, read how to do it in the devreorder p
 if you are running a 32 bit system, replace the dinput8.dll file with the one from the x86 folder.
 it works best with Retroarch because of the autoconfig feature, allowing you to have config load up with the controller chosen.
 but you can use it with any game/emulator you just have to provide your own button mapping.
-(integration with joytokey maybe??)
+
 
 also in devreorder.ini under [Settings] you can change the hotkeys to scroll the controllers and which player you choose.
 Cycle_Players is also the hotkey that loads the gui, so basically everytime you load the gui it changes the player number.
